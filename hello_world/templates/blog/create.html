@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <h1>{% block title %}Add an Item{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="uses_remaining">Uses Remaining</label>
+	<input name="uses_remaining" id="uses_remaining" value="{{ request.form['uses_remaining'] }}" required>
+  </form>
+{% endblock %}

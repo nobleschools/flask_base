@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block header %}
+  <h1>{% block title %}Edit contacts "{{ contacts['id'] }}"{% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+  <form method="post">
+    <label for="uses_remaining">Uses Remaining</label>
+	<input name="uses_remaining" id="uses_remaining"
+	  value="{{ request.form['uses_remaining'] or contacts['uses_remaining'] }}" required>
+  </form>
+  <hr>
+  <form action="{{ url_for('blog.delete', id=contacts['id']) }}" method="post">
+    <input class="danger" type="submit" value="Delete" onclick="return confirm('Are you sure?');">
+  </form>
+{% endblock %}
+    
