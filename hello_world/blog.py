@@ -8,8 +8,30 @@ from hello_world.db import get_db
 
 bp = Blueprint("blog", __name__)
 
+
+def get_contacts(id, check_author=True):
+    """Get a contacts entry from the database, by id."""
+
+    contacts = get_db().execute(
+        "SELECT c.id, uses_remaining, owner_id"
+        " FROM contacts c JOIN user u on c.owner_id = u.id"
+        " WHERE c.id = ?",
+        (id,)
+    ).fetchone()
+
+    if contacts is None:
+        abort(404, "Contacts id {0} doesn't exist".format(id))
+
+    # prevents users from editing others' items
+    if check_author and contacts["owner_id"] != g.user["id"]:
+        abort(403)
+
+    return contacts
+
+
 @bp.route("/")
 def index():
+    """Retrieve the necessary context for the homepage."""
     db = get_db()
     contacts_list = db.execute(
         "SELECT c.id, uses_remaining, created, owner_id, username"
@@ -22,6 +44,7 @@ def index():
 @bp.route("/create", methods=("GET", "POST"))
 @login_required
 def create():
+    """Create a new item"""
     if request.method == "POST":
         uses_remaining = request.form["uses_remaining"]
         error = None
@@ -43,26 +66,6 @@ def create():
             return redirect(url_for("blog.index"))
 
     return render_template("blog/create.html")
-
-
-def get_contacts(id, check_author=True):
-    """Get a contacts entry by id."""
-
-    contacts = get_db().execute(
-        "SELECT c.id, uses_remaining, owner_id"
-        " FROM contacts c JOIN user u on c.owner_id = u.id"
-        " WHERE c.id = ?",
-        (id,)
-    ).fetchone()
-
-    if contacts is None:
-        abort(404, "Contacts id {0} doesn't exist".format(id))
-
-    # prevents users from editing others' items
-    if check_author and contacts["owner_id"] != g.user["id"]:
-        abort(403)
-
-    return contacts
 
 
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
@@ -99,7 +102,7 @@ def update(id):
 @login_required
 def delete(id):
     """Delete a contacts item"""
-    get_contacts(id) # confirms there's contacts with this id
+    get_contacts(id)  # confirms there's contacts with this id
     db = get_db()
     db.execute("DELETE FROM contacts WHERE id = ?", (id,))
     db.commit()
