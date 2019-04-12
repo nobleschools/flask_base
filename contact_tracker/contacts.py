@@ -1,3 +1,4 @@
+import arrow
 from flask import (
     Blueprint, flash, g, redirect, render_template, request, url_for
 )
@@ -13,7 +14,7 @@ def get_contacts(id, check_author=True):
     """Get a contacts entry from the database, by id."""
 
     contacts = get_db().execute(
-        "SELECT c.id, uses_remaining, owner_id"
+        "SELECT c.id, uses_remaining, owner_id, end_date"
         " FROM contacts c JOIN user u on c.owner_id = u.id"
         " WHERE c.id = ?",
         (id,)
@@ -34,9 +35,9 @@ def index():
     """Retrieve the necessary context for the homepage."""
     db = get_db()
     contacts_list = db.execute(
-        "SELECT c.id, uses_remaining, created, owner_id, username"
+        "SELECT c.id, uses_remaining, start_date, owner_id, username, end_date"
         " FROM contacts c JOIN user u ON c.owner_id = u.id"
-        " ORDER BY created DESC",
+        " ORDER BY start_date DESC",
     ).fetchall()
     return render_template("contacts/index.html", contacts_list=contacts_list)
 
@@ -55,11 +56,13 @@ def create():
         if error is not None:
             flash(error)
         else:
+            today = arrow.now()
+            end_date = today.shift(days=int(uses_remaining)).timestamp
             db = get_db()
             db.execute(
-                "INSERT INTO contacts (uses_remaining, owner_id)"
-                " VALUES (?, ?)",
-                (uses_remaining, g.user["id"])
+                "INSERT INTO contacts (uses_remaining, owner_id, end_date)"
+                " VALUES (?, ?, ?)",
+                (uses_remaining, g.user["id"], end_date)
             )
             db.commit()
 

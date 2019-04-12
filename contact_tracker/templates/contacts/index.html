@@ -13,7 +13,8 @@
       <header>
         <div>
           <h1>{{ contacts['uses_remaining'] }} uses remaining</h1>
-          <div class="about">by {{ contacts['username'] }} on {{ contacts['created'].strftime('%Y-%m-%d') }}</div>
+          <div class="about">by {{ contacts['username'] }} on {{ contacts['start_date'].strftime('%Y-%m-%d') }}</div>
+	  <div class="about">end date on {{ contacts['end_date'] }} </div>
         </div>
         {% if g.user['id'] == contacts['owner_id'] %}
           <a class="action" href="{{ url_for('contacts.update', id=contacts['id']) }}">Edit</a>
