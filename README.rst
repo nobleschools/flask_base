@@ -15,13 +15,13 @@ required packages).
 
 Requires FLASK_APP and FLASK_ENV environment variables set. For example:
 
-``$ export FLASK_APP=hello_world``
+``$ export FLASK_APP=contact_tracker``
 
 ``$ export FLASK_ENV=development``
 
 Or, set when running commands:
 
-``$ FLASK_APP=hello_world FLASK_ENV=development flask run``
+``$ FLASK_APP=contact_tracker FLASK_ENV=development flask run``
 
 Before running the app the first time, or if making any changes to the database
 schema, you'll have to run the init-db command:

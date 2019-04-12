@@ -3,10 +3,10 @@ from flask import (
 )
 from werkzeug.exceptions import abort
 
-from hello_world.auth import login_required
-from hello_world.db import get_db
+from contact_tracker.auth import login_required
+from contact_tracker.db import get_db
 
-bp = Blueprint("blog", __name__)
+bp = Blueprint("contacts", __name__)
 
 
 def get_contacts(id, check_author=True):
@@ -38,7 +38,7 @@ def index():
         " FROM contacts c JOIN user u ON c.owner_id = u.id"
         " ORDER BY created DESC",
     ).fetchall()
-    return render_template("blog/index.html", contacts_list=contacts_list)
+    return render_template("contacts/index.html", contacts_list=contacts_list)
 
 
 @bp.route("/create", methods=("GET", "POST"))
@@ -63,9 +63,9 @@ def create():
             )
             db.commit()
 
-            return redirect(url_for("blog.index"))
+            return redirect(url_for("contacts.index"))
 
-    return render_template("blog/create.html")
+    return render_template("contacts/create.html")
 
 
 @bp.route("/<int:id>/update", methods=("GET", "POST"))
@@ -93,9 +93,9 @@ def update(id):
             )
             db.commit()
 
-            return redirect(url_for("blog.index"))
+            return redirect(url_for("contacts.index"))
 
-    return render_template("blog/update.html", contacts=contacts)
+    return render_template("contacts/update.html", contacts=contacts)
 
 
 @bp.route("/<int:id>/delete", methods=("POST",))
@@ -107,5 +107,5 @@ def delete(id):
     db.execute("DELETE FROM contacts WHERE id = ?", (id,))
     db.commit()
 
-    return redirect(url_for("blog.index"))
+    return redirect(url_for("contacts.index"))
 
