@@ -57,7 +57,7 @@ def create():
             flash(error)
         else:
             today = arrow.now()
-            end_date = today.shift(days=int(uses_remaining)).timestamp
+            end_date = today.shift(days=int(uses_remaining)).datetime
             db = get_db()
             db.execute(
                 "INSERT INTO contacts (uses_remaining, owner_id, end_date)"
